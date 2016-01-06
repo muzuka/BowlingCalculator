@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_SCORE_SIZE 10
+#define DEBUG 0
+
 // Calculates bowling score
 // Assuming 10 pins
 // Input by argument
@@ -17,12 +20,9 @@ char* scoreOne = "9/7/-8-56--77115XX14";
 char* scoreTwo = "9/X3/8/8/7/8/XX9/6";
 
 char validChars[] = {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', 'X'};
-char validNums[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-char* rounds[10];
-int   scores[10];
-
-int debug = 0;
+char* rounds[MAX_SCORE_SIZE];
+int   scores[MAX_SCORE_SIZE];
 
 // returns segment of string
 // method from Flesym in forum: http://www.linuxquestions.org/questions/programming-9/extract-substring-from-string-in-c-432620/
@@ -34,7 +34,7 @@ char* substring(char* str, int start, int end) {
 
 // Decides whether character is in an array
 // Returns 1 when found, 0 otherwise
-int isInArray(char ch, char arr[]) {
+int isValidChar(char ch, char arr[]) {
   int i;
 
   for(i = 0; i < 12; i++) {
@@ -51,7 +51,7 @@ int hasValidCharacters(char* score) {
   int i;
   
   for(i = 0; i < strlen(score); i++) {
-    if(isInArray(score[i], validChars) == 0) {
+    if(isValidChar(score[i], validChars) == 0) {
       return 0;
     }
   }
@@ -74,12 +74,12 @@ int validRound(char* score) {
 
     // if an incomplete throw is followed by a strike return false
     // A strike cannot follow a throw less than 10.
-    else if((score[1] == 'X' && isInArray(score[0], validNums) == 1) || (score[2] == 'X' && isInArray(score[1], validNums) == 1)) {
+    else if((score[1] == 'X' && isValidChar(score[0], validChars)) || (score[2] == 'X' && isValidChar(score[1], validChars))) {
       return 0;
     }
 
     // if all throws are incomplete
-    else if(isInArray(score[0], validNums) == 1 && isInArray(score[1], validNums) == 1 && isInArray(score[2], validNums) == 1) {
+    else if(isValidChar(score[0], validChars) && isValidChar(score[1], validChars) && isValidChar(score[2], validChars)) {
       // if the sum is greater than 10
       if((atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) + atoi(substring(score, 2, 3))) >= 10) {
 		    return 0;
@@ -102,7 +102,7 @@ int validRound(char* score) {
   else if(strlen(score) == 2) {
 
     // if round begins with a spare
-    if(score[0] == '/' && isInArray(score[1], validNums) == 1) {
+    if(score[0] == '/' && isValidChar(score[1], validChars)) {
       return 0;
     }
     // if two spares are in one round
@@ -110,9 +110,9 @@ int validRound(char* score) {
       return 0;
     }
     // if both throws are incomplete
-    else if(isInArray(score[0], validNums) == 1 && isInArray(score[1], validNums) == 1) {
+    else if(isValidChar(score[0], validChars) && isValidChar(score[1], validChars)) {
       // if sum of throws is greater than 10
-      if(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) >= 10) {
+      if(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) >= MAX_SCORE_SIZE) {
 	     return 0;
       }
       else {
@@ -138,7 +138,7 @@ int validRound(char* score) {
 int getThrowScore(char throw, int pos, int place, int includeBonus) {
   int t;
 
-  if(debug) {
+  if(DEBUG) {
     printf("%s%d\n", "evalThrow: Evaluating a throw: ", pos);
   }
   // test throw
@@ -152,7 +152,7 @@ int getThrowScore(char throw, int pos, int place, int includeBonus) {
     else {
       // if next round isn't strike
       if(rounds[pos+1][0] != 'X') {
-	     return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
+	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
       }
       else {
   	    // if next round is the last round
@@ -246,11 +246,12 @@ int calculateScore(char* score) {
     extractRounds(score);
  
     // calculate total
-    for(int i = 0; i < 10; i++) {
-      
+    for(int i = 0; i < MAX_SCORE_SIZE; i++) {
+
       // Check round validity (errors)
       if(validRound(rounds[i]) == 0) {
 				printf("Invalid Round!\n");
+        printf("%s\n", rounds[i]);
 				return -1;
       }
       else {
@@ -270,7 +271,7 @@ int calculateScore(char* score) {
 // main function
 int main(int argc, char * argv[]) {
   
-  if(debug) {
+  if(DEBUG) {
     printf("%d\n", calculateScore(scoreOne));
     printf("%s\n", "I didn't seg fault");
   }
