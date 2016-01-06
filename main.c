@@ -11,11 +11,6 @@
 
 // Input should only contain the values in validChars below.
 
-struct round {
-  char a, b, c;
-  int number;
-};
-
 // expected: 103
 char* scoreOne = "9/7/-8-56--77115XX14";
 // expected: 196
@@ -50,10 +45,9 @@ int isInArray(char ch, char arr[]) {
   return 0;
 }
 
-
 // Decides whether all elements of the argument are in the array validChars
 // Returns 1 when all are valid, 0 otherwise
-int checkValid(char* score) {
+int hasValidCharacters(char* score) {
   int i;
   
   for(i = 0; i < strlen(score); i++) {
@@ -67,7 +61,7 @@ int checkValid(char* score) {
 // Decides whether a round is valid
 // -/ and /# are invalid regular round scores
 // X/ and #X are invalid 10th round scores
-int checkRound(char* score) {
+int validRound(char* score) {
   // if round 10
 
   if(strlen(score) == 3) {
@@ -141,7 +135,7 @@ int checkRound(char* score) {
 //         the throw number
 //         includeBonus, is a flag for whether the extra points should be calculated for a strike or a spare
 // returns: the score of the throw or -1 for an error
-int evalThrow(char throw, int pos, int place, int includeBonus) {
+int getThrowScore(char throw, int pos, int place, int includeBonus) {
   int t;
 
   if(debug) {
@@ -158,15 +152,15 @@ int evalThrow(char throw, int pos, int place, int includeBonus) {
     else {
       // if next round isn't strike
       if(rounds[pos+1][0] != 'X') {
-	     return 10 + evalThrow(rounds[pos+1][0], pos+1, 1, 0) + evalThrow(rounds[pos+1][1], pos+1, 2, 0);
+	     return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
       }
       else {
 	    // if next round is the last round
 	    if(pos+1 == 9) {
-	      return 10 + evalThrow(rounds[pos+1][0], pos+1, 1, 0) + evalThrow(rounds[pos+1][1], pos+1, 2, 0);
+	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
     	}
 	    else {
-	      return 10 + evalThrow(rounds[pos+1][0], pos+1, 1, 0) + evalThrow(rounds[pos+2][0], pos+2, 1, 0);
+	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+2][0], pos+2, 1, 0);
 	    }
       }
     }
@@ -182,7 +176,7 @@ int evalThrow(char throw, int pos, int place, int includeBonus) {
       }
     }
     else {
-      return (10 - atoi(substring(rounds[pos], 0, 1))) + evalThrow(rounds[pos+1][0], pos+1, 1, 0);
+      return (10 - atoi(substring(rounds[pos], 0, 1))) + getThrowScore(rounds[pos+1][0], pos+1, 1, 0);
     }
     // if a gutterball
   case '-':
@@ -203,37 +197,37 @@ int evalThrow(char throw, int pos, int place, int includeBonus) {
 //        number of round
 int calculateRoundScore(char* score, int pos) {
   if(pos == 9) {
-    return evalThrow(score[0], pos, 1, 0) + evalThrow(score[1], pos, 2, 0) + evalThrow(score[2], pos, 3, 0);
+    return getThrowScore(score[0], pos, 1, 0) + getThrowScore(score[1], pos, 2, 0) + getThrowScore(score[2], pos, 3, 0);
   }
   else {
     if(score[0] != 'X') {
-      return evalThrow(score[0], pos, 1, 1) + evalThrow(score[1], pos, 2, 1);
+      return getThrowScore(score[0], pos, 1, 1) + getThrowScore(score[1], pos, 2, 1);
     }
     else {
-      return evalThrow(score[0], pos, 1, 1);
+      return getThrowScore(score[0], pos, 1, 1);
     }
   }
 }
 
 void extractRounds(int scorelength, char* score) {
-    int round = 0;
+    int roundVal = 0;
 
     for(int i = 0; i < scorelength; i++) {
       // Round size: 3 when last
-      if(round == 9) {
-        rounds[round] = substring(score, scorelength-3, scorelength);
+      if(roundVal == 9) {
+        rounds[roundVal] = substring(score, scorelength-3, scorelength);
         break;
       }
       // round size: 1 when a strike
       if(score[i] == 'X') {
-        rounds[round] = substring(score, i, i+1);
-        round += 1;
+        rounds[roundVal] = substring(score, i, i+1);
+        roundVal += 1;
       }
       // else a normal round size: 2
       else {
-        rounds[round] = substring(score, i, i+2);
+        rounds[roundVal] = substring(score, i, i+2);
         i += 1;
-        round += 1;
+        roundVal += 1;
       }
     }
 }
@@ -244,13 +238,13 @@ int calculateScore(char* score) {
   int scorelength= strlen(score);
   
   // if score contains only valid characters
-  if(checkValid(score)) {
+  if(hasValidCharacters(score)) {
  
     extractRounds(scorelength, score);
 
     // Check round validity (errors) 
     for(int i = 0; i < 10; i++) {
-      if(checkRound(rounds[i]) == 0) {
+      if(validRound(rounds[i]) == 0) {
 				printf("Invalid Round!\n");
 				return -1;
       }
