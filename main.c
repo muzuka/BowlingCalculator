@@ -210,7 +210,9 @@ int calculateRoundScore(char* score, int pos) {
   }
 }
 
-void extractRounds(int scorelength) {
+void extractRounds(int scorelength, char* score) {
+    int round = 0;
+
     for(int i = 0; i < scorelength; i++) {
       // Round size: 3 when last
       if(round == 9) {
@@ -234,13 +236,12 @@ void extractRounds(int scorelength) {
 // Calculates the final score of the game.
 int calculateScore(char* score) {
   int sum = 0;
-  int round = 0;
   int scorelength= strlen(score);
   
   // if score contains only valid characters
-  if(checkValid(score) == 1) {
+  if(checkValid(score)) {
  
-    extractRounds(scorelength);
+    extractRounds(scorelength, score);
 
     // Check round validity (errors) 
     for(int i = 0; i < 10; i++) {
