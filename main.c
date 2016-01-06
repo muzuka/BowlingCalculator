@@ -22,7 +22,7 @@ char validNums[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
 char* rounds[10];
 int   scores[10];
 
-int debug = 1;
+int debug = 0;
 
 // returns segment of string
 // method from Flesym in forum: http://www.linuxquestions.org/questions/programming-9/extract-substring-from-string-in-c-432620/
@@ -137,6 +137,8 @@ int checkRound(char* score) {
 //         includeBonus, is a flag for whether the extra points should be calculated for a strike or a spare
 // returns: the score of the throw or -1 for an error
 int evalThrow(char throw, int pos, int place, int includeBonus) {
+  int t;
+
   if(debug == 1) {
     printf("%s%d\n", "evalThrow: Evaluating a throw: ", pos);
   }
@@ -183,7 +185,7 @@ int evalThrow(char throw, int pos, int place, int includeBonus) {
     // if an incomplete throw
   case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
 
-    int t = throw - '0';
+    t = throw - '0';
     return t;
     // else error
   default:
