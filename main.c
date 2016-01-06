@@ -130,9 +130,9 @@ int validRound(char* score) {
 }
 
 // Evaluates the score of a single throw
-// params: the score character 
-//         the round number
-//         the throw number
+// params: throw, the throw character 
+//         pos, the round number
+//         place, the throw number
 //         includeBonus, is a flag for whether the extra points should be calculated for a strike or a spare
 // returns: the score of the throw or -1 for an error
 int getThrowScore(char throw, int pos, int place, int includeBonus) {
@@ -155,13 +155,13 @@ int getThrowScore(char throw, int pos, int place, int includeBonus) {
 	     return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
       }
       else {
-	    // if next round is the last round
-	    if(pos+1 == 9) {
-	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
-    	}
-	    else {
-	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+2][0], pos+2, 1, 0);
-	    }
+  	    // if next round is the last round
+  	    if(pos+1 == 9) {
+  	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
+      	}
+  	    else {
+  	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+2][0], pos+2, 1, 0);
+  	    }
       }
     }
   case '/':
@@ -193,8 +193,8 @@ int getThrowScore(char throw, int pos, int place, int includeBonus) {
 }
 
 // Calculates the score of a round
-// param: string of the score
-//        number of round
+// param: score, string of the score
+//        pos, number of round
 int calculateRoundScore(char* score, int pos) {
   if(pos == 9) {
     return getThrowScore(score[0], pos, 1, 0) + getThrowScore(score[1], pos, 2, 0) + getThrowScore(score[2], pos, 3, 0);
@@ -209,8 +209,12 @@ int calculateRoundScore(char* score, int pos) {
   }
 }
 
-void extractRounds(int scorelength, char* score) {
+// fills rounds array
+// params:
+//        score, the whole score
+void extractRounds(char* score) {
     int roundVal = 0;
+    int scorelength = strlen(score);
 
     for(int i = 0; i < scorelength; i++) {
       // Round size: 3 when last
@@ -235,26 +239,24 @@ void extractRounds(int scorelength, char* score) {
 // Calculates the final score of the game.
 int calculateScore(char* score) {
   int sum = 0;
-  int scorelength= strlen(score);
   
   // if score contains only valid characters
   if(hasValidCharacters(score)) {
  
-    extractRounds(scorelength, score);
-
-    // Check round validity (errors) 
+    extractRounds(score);
+ 
+    // calculate total
     for(int i = 0; i < 10; i++) {
+      
+      // Check round validity (errors)
       if(validRound(rounds[i]) == 0) {
 				printf("Invalid Round!\n");
 				return -1;
       }
       else {
 				scores[i] = calculateRoundScore(rounds[i], i);
+        sum += scores[i];
       }
-    }
-    // sum the scores
-    for(int i = 0; i < 10; i++) {
-      sum += scores[i];
     }
     return sum;
   }
