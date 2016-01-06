@@ -139,7 +139,7 @@ int checkRound(char* score) {
 int evalThrow(char throw, int pos, int place, int includeBonus) {
   int t;
 
-  if(debug == 1) {
+  if(debug) {
     printf("%s%d\n", "evalThrow: Evaluating a throw: ", pos);
   }
   // test throw
@@ -210,9 +210,29 @@ int calculateRoundScore(char* score, int pos) {
   }
 }
 
+void extractRounds(int scorelength) {
+    for(int i = 0; i < scorelength; i++) {
+      // Round size: 3 when last
+      if(round == 9) {
+        rounds[round] = substring(score, scorelength-3, scorelength);
+        break;
+      }
+      // round size: 1 when a strike
+      if(score[i] == 'X') {
+        rounds[round] = substring(score, i, i+1);
+        round += 1;
+      }
+      // else a normal round size: 2
+      else {
+        rounds[round] = substring(score, i, i+2);
+        i += 1;
+        round += 1;
+      }
+    }
+}
+
 // Calculates the final score of the game.
 int calculateScore(char* score) {
-  int i;
   int sum = 0;
   int round = 0;
   int scorelength= strlen(score);
@@ -220,28 +240,10 @@ int calculateScore(char* score) {
   // if score contains only valid characters
   if(checkValid(score) == 1) {
  
-    // extract rounds
-    for(i = 0; i < scorelength; i++) {
-      // Round size: 3 when last
-      if(round == 9) {
-	    rounds[round] = substring(score, scorelength-3, scorelength);
-	    break;
-      }
-      // round size: 1 when a strike
-      if(score[i] == 'X') {
-	    rounds[round] = substring(score, i, i+1);
-	    round += 1;
-      }
-      // else a normal round size: 2
-      else {
-	    rounds[round] = substring(score, i, i+2);
-	    i += 1;
-	    round += 1;
-      }
-    }
+    extractRounds(scorelength);
 
     // Check round validity (errors) 
-    for(i = 0; i < 10; i++) {
+    for(int i = 0; i < 10; i++) {
       if(checkRound(rounds[i]) == 0) {
 				printf("Invalid Round!\n");
 				return -1;
@@ -251,13 +253,14 @@ int calculateScore(char* score) {
       }
     }
     // sum the scores
-    for(i = 0; i < 10; i++) {
+    for(int i = 0; i < 10; i++) {
       sum += scores[i];
     }
     return sum;
   }
   else {
 		printf("Invalid Score!\n");
+    exit(EXIT_FAILURE);
     return -1;
   }
 }
@@ -265,7 +268,7 @@ int calculateScore(char* score) {
 // main function
 int main(int argc, char * argv[]) {
   
-  if(debug == 1) {
+  if(debug) {
     printf("%d\n", calculateScore(scoreOne));
     printf("%s\n", "I didn't seg fault");
   }
