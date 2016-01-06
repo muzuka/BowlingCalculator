@@ -32,13 +32,20 @@ char* substring(char* str, int start, int end) {
   return strncpy(to, from+start, end-start);
 }
 
+int isDigit(char ch) {
+  for(int i = 1; i < 10; i++) {
+    if(ch == validChars[i]) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 // Decides whether character is in an array
 // Returns 1 when found, 0 otherwise
-int isValidChar(char ch, char arr[]) {
-  int i;
-
-  for(i = 0; i < 12; i++) {
-    if(ch == arr[i]) {
+int isValidChar(char ch) {
+  for(int i = 0; i < 12; i++) {
+    if(ch == validChars[i]) {
       return 1;
     }
   }
@@ -51,7 +58,7 @@ int hasValidCharacters(char* score) {
   int i;
   
   for(i = 0; i < strlen(score); i++) {
-    if(isValidChar(score[i], validChars) == 0) {
+    if(isValidChar(score[i]) == 0) {
       return 0;
     }
   }
@@ -65,21 +72,18 @@ int validRound(char* score) {
   // if round 10
 
   if(strlen(score) == 3) {
-
     // if X/ occurs return false
     // A spare cannot follow a strike
     if((score[0] == 'X' && score[1] == '/') || (score[1] == 'X' && score[2] == '/')) {
       return 0;
     }
-
     // if an incomplete throw is followed by a strike return false
     // A strike cannot follow a throw less than 10.
-    else if((score[1] == 'X' && isValidChar(score[0], validChars)) || (score[2] == 'X' && isValidChar(score[1], validChars))) {
+    else if((score[1] == 'X' && isValidChar(score[0])) || (score[2] == 'X' && isValidChar(score[1]))) {
       return 0;
     }
-
     // if all throws are incomplete
-    else if(isValidChar(score[0], validChars) && isValidChar(score[1], validChars) && isValidChar(score[2], validChars)) {
+    else if(isDigit(score[0]) && isDigit(score[1]) && isDigit(score[2])) {
       // if the sum is greater than 10
       if((atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) + atoi(substring(score, 2, 3))) >= 10) {
 		    return 0;
@@ -88,7 +92,6 @@ int validRound(char* score) {
 	      return 1;
       }
     }
-
     // if first char is a /
     // first throw cannot be a spare
     else if(score[0] == '/') {
@@ -100,9 +103,8 @@ int validRound(char* score) {
   }
   // if a normal round
   else if(strlen(score) == 2) {
-
     // if round begins with a spare
-    if(score[0] == '/' && isValidChar(score[1], validChars)) {
+    if(score[0] == '/' && isValidChar(score[1])) {
       return 0;
     }
     // if two spares are in one round
@@ -110,7 +112,7 @@ int validRound(char* score) {
       return 0;
     }
     // if both throws are incomplete
-    else if(isValidChar(score[0], validChars) && isValidChar(score[1], validChars)) {
+    else if(isValidChar(score[0]) && isValidChar(score[1])) {
       // if sum of throws is greater than 10
       if(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) >= MAX_SCORE_SIZE) {
 	     return 0;
