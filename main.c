@@ -89,7 +89,6 @@ int validRound(char* score) {
     else if(isDigit(score[0]) && isDigit(score[1]) && isDigit(score[2]))
       // if the sum is greater than 10
       return underMaximumScore(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) + atoi(substring(score, 2, 3)));
-    // if first char is a /
     // first throw cannot be a spare
     else if(score[0] == '/')
       return 0;
@@ -133,9 +132,8 @@ int getThrowScore(char throw, int pos, int place, int includeBonus) {
     // if a strike
   case 'X':
     // if last round
-    if(pos == 9 || includeBonus == 0) {
+    if(pos == 9 || includeBonus == 0)
       return 10;
-    }
     else {
       // if next round isn't strike
       if(rounds[pos+1][0] != 'X') {
@@ -143,24 +141,20 @@ int getThrowScore(char throw, int pos, int place, int includeBonus) {
       }
       else {
   	    // if next round is the last round
-  	    if(pos+1 == 9) {
+  	    if(pos+1 == 9)
   	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+1][1], pos+1, 2, 0);
-      	}
-  	    else {
+  	    else
   	      return 10 + getThrowScore(rounds[pos+1][0], pos+1, 1, 0) + getThrowScore(rounds[pos+2][0], pos+2, 1, 0);
-  	    }
       }
     }
   case '/':
     // if last round
     if(pos == 9 || includeBonus == 0) {
       // spare can only happen in the 2nd or 3rd throws
-      if(place == 2) {
+      if(place == 2)
 	     return 10 - atoi(substring(rounds[pos], 0, 1));
-      }
-      else if(place == 3) {
+      else if(place == 3)
 	     return 10 - atoi(substring(rounds[pos], 1, 2));
-      }
     }
     else {
       return (10 - atoi(substring(rounds[pos], 0, 1))) + getThrowScore(rounds[pos+1][0], pos+1, 1, 0);
@@ -170,7 +164,6 @@ int getThrowScore(char throw, int pos, int place, int includeBonus) {
     return 0;
     // if an incomplete throw
   case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-
     t = throw - '0';
     return t;
     // else error
@@ -187,12 +180,10 @@ int calculateRoundScore(char* score, int pos) {
     return getThrowScore(score[0], pos, 1, 0) + getThrowScore(score[1], pos, 2, 0) + getThrowScore(score[2], pos, 3, 0);
   }
   else {
-    if(score[0] != 'X') {
+    if(score[0] != 'X')
       return getThrowScore(score[0], pos, 1, 1) + getThrowScore(score[1], pos, 2, 1);
-    }
-    else {
+    else
       return getThrowScore(score[0], pos, 1, 1);
-    }
   }
 }
 
