@@ -45,9 +45,8 @@ int isDigit(char ch) {
 // Returns 1 when found, 0 otherwise
 int isValidChar(char ch) {
   for(int i = 0; i < 12; i++) {
-    if(ch == validChars[i]) {
+    if(ch == validChars[i])
       return 1;
-    }
   }
   return 0;
 }
@@ -58,11 +57,17 @@ int hasValidCharacters(char* score) {
   int i;
   
   for(i = 0; i < strlen(score); i++) {
-    if(isValidChar(score[i]) == 0) {
+    if(isValidChar(score[i]) == 0)
       return 0;
-    }
   }
   return 1;
+}
+
+int underMaximumScore(int score) {
+  if(score > MAX_SCORE_SIZE)
+    return 0;
+  else
+    return 1;
 }
 
 // Decides whether a round is valid
@@ -74,61 +79,41 @@ int validRound(char* score) {
   if(strlen(score) == 3) {
     // if X/ occurs return false
     // A spare cannot follow a strike
-    if((score[0] == 'X' && score[1] == '/') || (score[1] == 'X' && score[2] == '/')) {
+    if((score[0] == 'X' && score[1] == '/') || (score[1] == 'X' && score[2] == '/'))
       return 0;
-    }
     // if an incomplete throw is followed by a strike return false
     // A strike cannot follow a throw less than 10.
-    else if((score[1] == 'X' && isValidChar(score[0])) || (score[2] == 'X' && isValidChar(score[1]))) {
+    else if((score[1] == 'X' && isValidChar(score[0])) || (score[2] == 'X' && isValidChar(score[1])))
       return 0;
-    }
     // if all throws are incomplete
-    else if(isDigit(score[0]) && isDigit(score[1]) && isDigit(score[2])) {
+    else if(isDigit(score[0]) && isDigit(score[1]) && isDigit(score[2]))
       // if the sum is greater than 10
-      if((atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) + atoi(substring(score, 2, 3))) >= 10) {
-		    return 0;
-      }
-      else {
-	      return 1;
-      }
-    }
+      return underMaximumScore(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) + atoi(substring(score, 2, 3)));
     // if first char is a /
     // first throw cannot be a spare
-    else if(score[0] == '/') {
+    else if(score[0] == '/')
       return 0;
-    }
-    else {
+    else
       return 1;
-    }
   }
   // if a normal round
   else if(strlen(score) == 2) {
     // if round begins with a spare
-    if(score[0] == '/' && isValidChar(score[1])) {
+    if(score[0] == '/' && isValidChar(score[1]))
       return 0;
-    }
     // if two spares are in one round
-    else if(score[0] == '/' && score[1] == '/') {
+    else if(score[0] == '/' && score[1] == '/')
       return 0;
-    }
     // if both throws are incomplete
-    else if(isValidChar(score[0]) && isValidChar(score[1])) {
+    else if(isValidChar(score[0]) && isValidChar(score[1]))
       // if sum of throws is greater than 10
-      if(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)) >= MAX_SCORE_SIZE) {
-	     return 0;
-      }
-      else {
-		    return 1;
-      }
-    }
-    else {
+      return underMaximumScore(atoi(substring(score, 0, 1)) + atoi(substring(score, 1, 2)));
+    else
       return 1;
-    }
   }
   // error
-  else {
+  else
     return -1;
-  }
 }
 
 // Evaluates the score of a single throw
