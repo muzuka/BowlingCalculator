@@ -11,6 +11,11 @@
 
 // Input should only contain the values in validChars below.
 
+struct round {
+  char a, b, c;
+  int number;
+};
+
 // expected: 103
 char* scoreOne = "9/7/-8-56--77115XX14";
 // expected: 196
