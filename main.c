@@ -228,19 +228,19 @@ int calculateScore(char* score) {
 
       // Check round validity (errors)
       if(validRound(rounds[i]) == 0) {
-				printf("Invalid Round!\n");
+		printf("Invalid Round!\n");
         printf("%s\n", rounds[i]);
-				return -1;
+		return -1;
       }
       else {
-				scores[i] = calculateRoundScore(rounds[i], i);
+		scores[i] = calculateRoundScore(rounds[i], i);
         sum += scores[i];
       }
     }
     return sum;
   }
   else {
-		printf("Invalid Score!\n");
+	printf("Invalid Score!\n");
     exit(EXIT_FAILURE);
     return -1;
   }
